@@ -46,6 +46,7 @@ class Enhanced_Policy():
         if number_of_appearances > max_number:
             return True
         return False
+    
     # Auxiliary function for NEAR operator. Given two lists A and B of integers, return minimun difference between A and B.
     def findSmallestDifference(self, A, B):
         A.sort()
@@ -92,6 +93,36 @@ class Enhanced_Policy():
             return False
         return False
     
+    def WITHIN(self, message):
+        if not self.policy_within:
+            return False
+        action1 = self.policy_within.strip().split('WITHIN')[1].split()[0]
+        action2 = self.policy_within.strip().split('WITHIN')[1].split()[1]
+        time = int(self.policy_within.strip().split('WITHIN')[1].split()[2])
+
+        message_as_string = str(message)
+        if (action1 in message_as_string) and (action2 in message_as_string):
+
+            # First we create two arrays. One will contain the times where action1 is executed in message. Same for action2.
+            list_of_times_action1_in_message = []
+            list_of_times_action2_in_message = []
+
+            for event in message:
+                event_as_string = str(event)
+                if action1 in event_as_string:
+                    list_of_times_action1_in_message.append(event["created_at"])
+                if action2 in event_as_string:
+                    list_of_times_action2_in_message.append(event["created_at"])
+            
+            # Now we compute the minimum time between action1 and action2
+            minimum_time = self.findSmallestDifference(list_of_times_action1_in_message, list_of_times_action2_in_message)
+
+            if minimum_time <= time:
+                return True                           
+            return False
+
+        return False
+    
     def analyze(self, msgs):
         analysis = self.policy.analyze(msgs)
 
@@ -109,6 +140,12 @@ class Enhanced_Policy():
             action2 = self.policy_near.strip().split('NEAR')[1].split()[1]
             distance = int(self.policy_near.strip().split('NEAR')[1].split()[2])
             analysis.errors.append(PolicyViolation(str(action1) + ' and '+str(action2)+' are within distance ' + str(distance)+'!'))
+        
+        if self.WITHIN(msgs):
+            action1 = self.policy_within.strip().split('WITHIN')[1].split()[0]
+            action2 = self.policy_within.strip().split('WITHIN')[1].split()[1]
+            time = int(self.policy_within.strip().split('WITHIN')[1].split()[2])
+            analysis.errors.append('"'+str(action1) + '" and "'+str(action2)+'" are executed within ' + str(time)+' seconds!')
         
         return analysis
         
@@ -141,5 +178,9 @@ if __name__ == '__main__':
     print('### Scenario 6 ###')
     policy = Enhanced_Policy(POLICY6)
     print(policy.analyze(TRACE6))
+
+    print('### Scenario 7 ###')
+    policy = Enhanced_Policy(POLICY7)
+    print(policy.analyze(TRACE7))
 
 
