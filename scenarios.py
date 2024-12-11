@@ -131,3 +131,17 @@ raise "No identity verification" if:
 """
 
 
+TRACE7 = [
+  {"role": "user", "content": "Check my transaction history and my account balance."},
+  {"role": "assistant", "content": "On it! Let me get the details."},
+  {"role": "system", "content": "ToolCall: read_sensitive_data1({'type': 'transaction_history'})", "created_at": 1702212600},
+  {"role": "system", "content": "ToolOutput: {'data': 'Transaction history details'}", "created_at": 1702212603},
+  {"role": "system", "content": "ToolCall: read_sensitive_data2({'type': 'account_balance'})", "created_at": 1702212608},
+  {"role": "system", "content": "ToolOutput: {'data': 'Account balance details'}", "created_at": 1702212609}
+]
+
+POLICY7 = """
+raise "Time constraints not satisfied" if:
+    0 == 1
+    WITHIN read_sensitive_data1 read_sensitive_data2 8
+"""
