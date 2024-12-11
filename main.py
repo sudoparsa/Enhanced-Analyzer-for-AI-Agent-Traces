@@ -134,4 +134,12 @@ if __name__ == '__main__':
     policy = Enhanced_Policy(POLICY4)
     print(policy.analyze(TRACE4))
 
+    print('### Scenario 5 ###')
+    policy = Enhanced_Policy(POLICY5)
+    print(policy.analyze(TRACE5))
+
+    print('### Scenario 6 ###')
+    policy = Enhanced_Policy(POLICY6)
+    print(policy.analyze(TRACE6))
+
 
